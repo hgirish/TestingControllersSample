@@ -62,6 +62,8 @@ namespace TestingControllersSample.Api
             session.AddIdea(idea);
 
             await _sessionRepository.UpdateAsync(session);
+
+            return Ok(session);
         }
 
         [HttpGet("forsessionactionresult/{sessionId}")]
