@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using TestingControllersSample.Controllers;
 using TestingControllersSample.Core.Interfaces;
 using TestingControllersSample.Core.Model;
+using TestingControllersSample.ViewModels;
 using Xunit;
 
 namespace TestingControllersSample.Tests.UnitTests
@@ -45,6 +46,47 @@ namespace TestingControllersSample.Tests.UnitTests
             // Assert
             var contentResult = Assert.IsType<ContentResult>(result);
             Assert.Equal("Session not found", contentResult.Content);
+        }
+        [Fact]
+        public async Task IndexReturnsViewResultWithStormSessionViewModel()
+        {
+            // Arrange
+            int testSessionId = 1;
+            var mockRepo = new Mock<IBrainstormSessionRepository>();
+            mockRepo.Setup(repo => repo.GetByIdAsync(testSessionId))
+                .ReturnsAsync(GetTestSessions().FirstOrDefault(
+                    s => s.Id == testSessionId));
+            var controller = new SessionController(mockRepo.Object);
+
+            // Act
+            var result = await controller.Index(testSessionId);
+
+            // Assert
+            var viewResult = Assert.IsType<ViewResult>(result);
+            var model = Assert.IsType<StormSessionViewModel>(
+                viewResult.ViewData.Model); // or viewResult.Model;
+            Assert.Equal("Test One", model.Name);
+            Assert.Equal(2, model.DateCreated.Day);
+            Assert.Equal(testSessionId, model.Id);
+
+        }
+
+        private List<BrainstormSession> GetTestSessions()
+        {
+            var sessions = new List<BrainstormSession>();
+            sessions.Add(new BrainstormSession()
+            {
+                DateCreated = new DateTime(2016, 7, 2),
+                Id = 1,
+                Name = "Test One"
+            });
+            sessions.Add(new BrainstormSession()
+            {
+                DateCreated = new DateTime(2016, 7, 1),
+                Id = 2,
+                Name = "Test Two"
+            });
+            return sessions;
         }
     }
 
