@@ -44,7 +44,7 @@ namespace TestingControllersSample.Tests.UnitTests
 
             // Assert
             var contentResult = Assert.IsType<ContentResult>(result);
-            Assert.Equal("Session not found.", contentResult.Content);
+            Assert.Equal("Session not found", contentResult.Content);
         }
     }
 
